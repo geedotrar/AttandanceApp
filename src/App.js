@@ -1,56 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Dashboard from "./pages/Dashboard";
+import Login from "./components/Login";
+import Users from "./pages/Users";
+import Absen from "./pages/Absen";
+import AddUser from "./pages/AddUser";
+import EditUser from "./pages/EditUser";
+import UserAbsen from "./pages/UserAbsen";
+import AddAbsen from "./pages/AddAbsen";
+import EditAbsen from "./pages/EditAbsen";
+import AddKegiatan from "./pages/AddKegiatan";
+import AbsenDetail from "./pages/AbsenDetail";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
+    <div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Login />}></Route>
+          <Route path="/dashboard" element={<Dashboard />}></Route>
+          <Route path="/absen/" element={<Absen />}></Route>
+          <Route path="/absen/add" element={<AddAbsen />}></Route>
+          <Route path="/absen/edit/:id" element={<EditAbsen />}></Route>
+          <Route path="/absen/detail/:id" element={<AbsenDetail />}></Route>
+
+          {/* ADMIN */}
+          <Route path="/users" element={<Users />}></Route>
+          <Route path="/users/add" element={<AddUser />}></Route>
+          <Route path="/users/edit/:id" element={<EditUser />}></Route>
+          <Route path="/userAbsen/:id" element={<UserAbsen />}></Route>
+
+          <Route path="/kegiatan/add/:id" element={<AddKegiatan />}></Route>
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
