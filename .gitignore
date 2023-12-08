@@ -1,0 +1,10 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# environment files
+.env
+
+# public directory
+/public
