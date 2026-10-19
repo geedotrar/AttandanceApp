@@ -2,8 +2,16 @@ import argon2 from "argon2";
 
 const findAll = async (req, res) => {
   try {
+    let whereCondition = {};
+    if (req.role !== "superadmin" && req.role !== "admin") {
+      whereCondition.divisi = req.divisi || "General";
+    } else if (req.query.divisi) {
+      whereCondition.divisi = req.query.divisi;
+    }
+
     const response = await req.context.models.pengguna.findAll({
-      attributes: ["id", "username", "nama", "jabatan", "role"],
+      attributes: ["id", "username", "nama", "jabatan", "divisi", "role"],
+      where: whereCondition,
     });
     res.status(200).json(response);
   } catch (error) {
@@ -14,7 +22,7 @@ const findAll = async (req, res) => {
 export const findOne = async (req, res) => {
   try {
     const response = await req.context.models.pengguna.findOne({
-      attributes: ["id", "username", "nama", "jabatan", "role"],
+      attributes: ["id", "username", "nama", "jabatan", "divisi", "role"],
       where: { id: req.params.id },
     });
     res.status(200).json(response);
@@ -24,7 +32,7 @@ export const findOne = async (req, res) => {
 };
 
 const create = async (req, res) => {
-  const { username, password, confPassword, nama, jabatan, role } = req.body;
+  const { username, password, confPassword, nama, jabatan, divisi, role } = req.body;
   if (password !== confPassword) return res.status(400).json({ msg: "Password dan Confirm Password tidak cocok" });
   const hashPassword = await argon2.hash(password);
   try {
@@ -33,7 +41,8 @@ const create = async (req, res) => {
       password: hashPassword,
       nama: nama,
       jabatan: jabatan,
-      role: role,
+      divisi: divisi || "General",
+      role: role || "user",
     });
     res.status(201).json({ msg: "Register Berhasil" });
   } catch (error) {
@@ -46,22 +55,22 @@ export const update = async (req, res) => {
     where: { id: req.params.id },
   });
   if (!user) return res.status(404).json({ msg: "User tidak ditemukan" });
-  const { username, password, confPassword, nama, jabatan, role } = req.body;
-  let hashPassword;
-  if (password === "" || password === null) {
-    hashPassword = user.password;
-  } else {
+  const { username, password, confPassword, nama, jabatan, divisi, role } = req.body;
+  let hashPassword = user.password;
+  if (password && password.trim() !== "") {
+    if (password !== confPassword) return res.status(400).json({ msg: "Password dan Confirm Password tidak cocok" });
     hashPassword = await argon2.hash(password);
   }
-  if (password !== confPassword) return res.status(400).json({ msg: "Password dan Confirm Password tidak cocok" });
+  const isPrivileged = req.role === "superadmin" || req.role === "admin";
   try {
     await req.context.models.pengguna.update(
       {
-        username: username,
+        username: username || user.username,
         password: hashPassword,
-        nama: nama,
-        jabatan: jabatan,
-        role: role,
+        nama: nama || user.nama,
+        jabatan: isPrivileged ? (jabatan || user.jabatan) : user.jabatan,
+        divisi: isPrivileged ? (divisi || user.divisi) : user.divisi,
+        role: isPrivileged ? (role || user.role) : user.role,
       },
       {
         where: {
@@ -95,67 +104,3 @@ const deleted = async (req, res) => {
 };
 
 export default { findAll, findOne, create, update, deleted };
-
-// const findAll = async (req, res) => {
-//   try {
-//     const pengguna = await req.context.models.pengguna.findAll();
-//     return res.send(pengguna);
-//   } catch (error) {
-//     return res.status(400).send(error);
-//   }
-// };
-
-// const findOne = async (req, res) => {
-//   try {
-//     const pengguna = await req.context.models.pengguna.findOne({
-//       where: { id: req.params.id },
-//     });
-//     return res.send(pengguna);
-//   } catch (error) {
-//     return res.status(400).send(error);
-//   }
-// };
-
-// const create = async (req, res) => {
-//   try {
-//     const pengguna = await req.context.models.pengguna.create({
-//       username: req.body.username,
-//       password: req.body.password,
-//       role: req.body.role,
-//       nama: req.body.nama,
-//       jabatan: req.body.jabatan,
-//     });
-//     return res.send(pengguna);
-//   } catch (error) {
-//     return res.status(400).send(error);
-//   }
-// };
-
-// const update = async (req, res) => {
-//   try {
-//     const pengguna = await req.context.models.pengguna.update(
-//       {
-//         username: req.body.username,
-//         password: req.body.password,
-//         role: req.body.role,
-//         nama: req.body.nama,
-//         jabatan: req.body.jabatan,
-//       },
-//       { returning: true, where: { id: req.params.id } }
-//     );
-//     return res.send(pengguna);
-//   } catch (error) {
-//     return res.status(400).send(error);
-//   }
-// };
-
-// const deleted = async (req, res) => {
-//   try {
-//     const pengguna = await req.context.models.pengguna.destroy({
-//       where: { id: req.params.id },
-//     });
-//     return res.send(`delete ${pengguna} rows`);
-//   } catch (error) {
-//     return res.status(400).send(error);
-//   }
-// };

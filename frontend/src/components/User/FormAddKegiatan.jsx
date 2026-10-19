@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { IoArrowBackOutline, IoSaveOutline, IoDocumentTextOutline } from "react-icons/io5";
+import { IoArrowBackOutline, IoSaveOutline } from "react-icons/io5";
 import { API_URL } from "../../config";
+import ConfirmModal from "../Common/ConfirmModal";
 
 const FormAddKegiatan = () => {
   const [kegiatan, setKegiatan] = useState("");
   const [msg, setMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -27,8 +29,14 @@ const FormAddKegiatan = () => {
     getKegiatanById();
   }, [id]);
 
-  const addKegiatan = async (e) => {
+  const handleFormSubmit = (e) => {
     e.preventDefault();
+    if (!kegiatan.trim()) return;
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmedSave = async () => {
+    setShowConfirmModal(false);
     setIsLoading(true);
     try {
       await axios.put(`${API_URL}/kegiatan/${id}`, {
@@ -64,7 +72,7 @@ const FormAddKegiatan = () => {
           </div>
         )}
 
-        <form onSubmit={addKegiatan}>
+        <form onSubmit={handleFormSubmit}>
           <div className="form-group-field">
             <label className="form-label-custom">Deskripsi Tugas &amp; Kegiatan Kerja</label>
             <textarea
@@ -88,6 +96,18 @@ const FormAddKegiatan = () => {
           </div>
         </form>
       </div>
+
+      <ConfirmModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleConfirmedSave}
+        title="Konfirmasi Catatan Kegiatan"
+        message="Apakah Anda yakin ingin menyimpan catatan kegiatan harian ini?"
+        confirmText="Ya, Simpan Kegiatan"
+        cancelText="Batal"
+        type="primary"
+        isLoading={isLoading}
+      />
     </div>
   );
 };

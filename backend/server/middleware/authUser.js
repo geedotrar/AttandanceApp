@@ -10,6 +10,7 @@ export const verifyUser = async (req, res, next) => {
   if (!user) return res.status(404).json({ msg: "User tidak ditemukan" });
   req.userId = user.id;
   req.role = user.role;
+  req.divisi = user.divisi || "General";
   next();
 };
 
@@ -20,6 +21,21 @@ export const adminOnly = async (req, res, next) => {
     },
   });
   if (!user) return res.status(404).json({ msg: "User tidak ditemukan" });
-  if (user.role !== "admin") return res.status(403).json({ msg: "Akses terlarang" });
+  if (user.role !== "admin" && user.role !== "superadmin") {
+    return res.status(403).json({ msg: "Akses terlarang" });
+  }
+  next();
+};
+
+export const superadminOnly = async (req, res, next) => {
+  const user = await req.context.models.pengguna.findOne({
+    where: {
+      id: req.session.userId,
+    },
+  });
+  if (!user) return res.status(404).json({ msg: "User tidak ditemukan" });
+  if (user.role !== "superadmin" && user.role !== "admin") {
+    return res.status(403).json({ msg: "Akses terlarang. Khusus Superadmin & Admin." });
+  }
   next();
 };

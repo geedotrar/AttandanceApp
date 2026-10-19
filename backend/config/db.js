@@ -1,4 +1,3 @@
-//config/db
 import Sequelize from "sequelize";
 import dotenv from "dotenv";
 dotenv.config();
@@ -8,10 +7,5 @@ const db = new Sequelize(process.env.DB_DATABASE, process.env.DB_USER, process.e
   port: process.env.DB_PORT || 5432,
   dialect: "postgres",
 });
-
-// db
-//   .authenticate()
-//   .then(() => console.log("connection has been estabilished successfully"))
-//   .catch((err) => console.log(err));
 
 export default db;

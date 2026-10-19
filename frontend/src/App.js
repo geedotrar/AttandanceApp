@@ -23,7 +23,6 @@ function App() {
           <Route path="/absen/edit/:id" element={<EditAbsen />}></Route>
           <Route path="/absen/detail/:id" element={<AbsenDetail />}></Route>
 
-          {/* ADMIN */}
           <Route path="/users" element={<Users />}></Route>
           <Route path="/users/add" element={<AddUser />}></Route>
           <Route path="/users/edit/:id" element={<EditUser />}></Route>

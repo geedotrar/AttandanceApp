@@ -30,10 +30,8 @@ export const getMe = createAsyncThunk("user/getMe", async (_, thunkAPI) => {
     const response = await axios.get(`${API_URL}/auth/me`);
     return response.data;
   } catch (error) {
-    if (error.response) {
-      const message = error.response.data.msg;
-      return thunkAPI.rejectWithValue(message);
-    }
+    const message = error.response?.data?.msg || error.message || "Sesi login berakhir";
+    return thunkAPI.rejectWithValue(message);
   }
 });
 
@@ -45,36 +43,53 @@ export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    reset: (state) => initialState,
+    reset: (state) => {
+      state.isError = false;
+      state.isSuccess = false;
+      state.isLoading = false;
+      state.message = "";
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(LoginUser.pending, (state) => {
       state.isLoading = true;
+      state.isError = false;
+      state.message = "";
     });
     builder.addCase(LoginUser.fulfilled, (state, action) => {
       state.isLoading = false;
       state.isSuccess = true;
+      state.isError = false;
       state.user = action.payload;
     });
     builder.addCase(LoginUser.rejected, (state, action) => {
       state.isLoading = false;
       state.isError = true;
+      state.user = null;
       state.message = action.payload;
     });
 
-    // Get User Login
     builder.addCase(getMe.pending, (state) => {
       state.isLoading = true;
     });
     builder.addCase(getMe.fulfilled, (state, action) => {
       state.isLoading = false;
       state.isSuccess = true;
+      state.isError = false;
       state.user = action.payload;
     });
     builder.addCase(getMe.rejected, (state, action) => {
       state.isLoading = false;
       state.isError = true;
+      state.user = null;
       state.message = action.payload;
+    });
+
+    builder.addCase(LogOut.fulfilled, (state) => {
+      state.user = null;
+      state.isSuccess = false;
+      state.isError = false;
+      state.message = "";
     });
   },
 });

@@ -8,7 +8,7 @@ import { getMe } from "../features/authSlice";
 const Dashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isError } = useSelector((state) => state.auth);
+  const { isError, user, isLoading } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(getMe());
@@ -19,6 +19,16 @@ const Dashboard = () => {
       navigate("/");
     }
   }, [isError, navigate]);
+
+  if (isLoading || (!user && !isError)) {
+    return (
+      <Layout>
+        <div className="hero-stat-card" style={{ padding: "48px 24px", textAlign: "center" }}>
+          <p style={{ color: "var(--text-secondary)", fontSize: "14px" }}>Memverifikasi sesi pengguna...</p>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>

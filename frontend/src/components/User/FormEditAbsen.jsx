@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Webcam from "react-webcam";
 import { 
   IoArrowBackOutline, 
@@ -10,6 +11,7 @@ import {
   IoTimeOutline
 } from "react-icons/io5";
 import { API_URL } from "../../config";
+import ConfirmModal from "../Common/ConfirmModal";
 
 const FormEditAbsen = () => {
   const webcamRef = useRef(null);
@@ -18,8 +20,16 @@ const FormEditAbsen = () => {
   const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString("id-ID"));
   const [msg, setMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
+  const { user } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (user && (user.role === "admin" || user.role === "superadmin")) {
+      navigate("/users");
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -50,13 +60,17 @@ const FormEditAbsen = () => {
     return new Blob([ab], { type: mimeString });
   };
 
-  const updateAbsen = async (e) => {
-    e.preventDefault();
+  const handleTriggerConfirm = () => {
+    setMsg("");
     if (!imageSrc) {
-      alert("Silahkan ambil foto selfie terlebih dahulu");
+      setMsg("Silahkan ambil foto selfie terlebih dahulu.");
       return;
     }
+    setShowConfirmModal(true);
+  };
 
+  const handleConfirmedUpdate = async () => {
+    setShowConfirmModal(false);
     setIsLoading(true);
     try {
       const blobImage = dataURItoBlob(imageSrc);
@@ -136,7 +150,7 @@ const FormEditAbsen = () => {
                 <IoRefreshOutline style={{ fontSize: "18px" }} />
                 <span>Ulangi Foto</span>
               </button>
-              <button type="button" onClick={updateAbsen} disabled={isLoading} className="btn-pill-dark" style={{ padding: "12px 28px" }}>
+              <button type="button" onClick={handleTriggerConfirm} disabled={isLoading} className="btn-pill-dark" style={{ padding: "12px 28px" }}>
                 <IoCheckmarkCircleOutline style={{ fontSize: "20px" }} />
                 <span>{isLoading ? "Menyimpan..." : "Konfirmasi & Selesai Kerja"}</span>
               </button>
@@ -144,6 +158,18 @@ const FormEditAbsen = () => {
           )}
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleConfirmedUpdate}
+        title="Konfirmasi Check Out Presensi"
+        message="Apakah Anda yakin ingin menyelesaikan jam kerja dan melakukan presensi pulang (Check-Out) sekarang?"
+        confirmText="Ya, Selesai Kerja"
+        cancelText="Batal"
+        type="primary"
+        isLoading={isLoading}
+      />
     </div>
   );
 };

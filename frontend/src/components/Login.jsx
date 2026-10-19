@@ -21,12 +21,18 @@ const Login = () => {
     if (user || isSuccess) {
       navigate("/dashboard");
     }
-    dispatch(reset());
-  }, [user, isSuccess, dispatch, navigate]);
+  }, [user, isSuccess, navigate]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(reset());
+    };
+  }, [dispatch]);
 
   const Auth = (e) => {
     e.preventDefault();
-    dispatch(LoginUser({ username, password }));
+    dispatch(reset());
+    dispatch(LoginUser({ username: username.trim(), password }));
   };
 
   return (

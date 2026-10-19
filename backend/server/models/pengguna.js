@@ -9,14 +9,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         primaryKey: true,
       },
-      // uuid: {
-      //   type: DataTypes.STRING,
-      //   defaultValue: DataTypes.UUIDV4,
-      //   allowNull: false,
-      //   validate: {
-      //     notEmpty: true,
-      //   },
-      // },
       username: {
         type: DataTypes.STRING(255),
         allowNull: true,
@@ -36,6 +28,10 @@ module.exports = function (sequelize, DataTypes) {
       },
       jabatan: {
         type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      divisi: {
+        type: DataTypes.STRING(100),
         allowNull: true,
       },
     },

@@ -1,4 +1,3 @@
-// absensiRoute
 import { Router } from "express";
 import index from "../controllers/indexController";
 import { verifyUser } from "../middleware/authUser";

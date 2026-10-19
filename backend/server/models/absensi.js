@@ -37,6 +37,27 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: true,
       },
+      latitude: {
+        type: DataTypes.STRING(50),
+        allowNull: true,
+      },
+      longitude: {
+        type: DataTypes.STRING(50),
+        allowNull: true,
+      },
+      status_kehadiran: {
+        type: DataTypes.STRING(50),
+        allowNull: true,
+        defaultValue: "Hadir",
+      },
+      keterangan_izin: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      surat_izin: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
     },
     {
       sequelize,

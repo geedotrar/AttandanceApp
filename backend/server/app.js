@@ -1,4 +1,3 @@
-//app
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
@@ -10,7 +9,8 @@ import routes from "./routes/indexRoute";
 import session from "express-session";
 import db from "../config/db";
 import SequelizeStore from "connect-session-sequelize";
-// const path = require("path");
+import path from "path";
+import fs from "fs";
 
 const port = process.env.PORT || 3002;
 
@@ -19,16 +19,20 @@ const sessionStore = SequelizeStore(session.Store);
 
 const store = new sessionStore({
   db: db,
+  tableName: "Sessions",
 });
 
 app.use(
   session({
     secret: process.env.SESS_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     store: store,
     cookie: {
-      secure: "auto",
+      secure: false,
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000,
     },
   })
 );
@@ -44,15 +48,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(compression());
 app.use(cookieParser());
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+    crossOriginEmbedderPolicy: false,
+  })
+);
 app.use(async (req, res, next) => {
   req.context = { models };
   next();
 });
-// app.use(express.static(path.join(__dirname, "uploads")));
-app.use(express.static("public"));
-
-// store.sync();
+const publicDir = path.resolve(process.cwd(), "public");
+if (!fs.existsSync(publicDir)) {
+  fs.mkdirSync(publicDir, { recursive: true });
+}
+app.use(express.static(publicDir));
 
 app.use("/users", routes.userRoute);
 app.use("/absensi", routes.absensiRoute);

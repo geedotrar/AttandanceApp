@@ -1,4 +1,3 @@
-//init models
 import Sequelize from "sequelize";
 import dotenv from "dotenv";
 dotenv.config();
@@ -40,6 +39,3 @@ function initModels(sequelize) {
 const models = initModels(sequelize);
 export default models;
 export { sequelize };
-// module.exports = initModels;
-// module.exports.initModels = initModels;
-// module.exports.default = initModels;

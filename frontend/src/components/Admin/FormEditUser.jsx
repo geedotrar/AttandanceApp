@@ -4,15 +4,36 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { IoArrowBackOutline, IoSaveOutline } from "react-icons/io5";
 import { API_URL } from "../../config";
 
+import SearchableSelect from "../Common/SearchableSelect";
+import ConfirmModal from "../Common/ConfirmModal";
+
+const DIVISI_OPTIONS = [
+  { value: "IT & Teknologi", label: "IT & Teknologi" },
+  { value: "Human Resources", label: "Human Resources" },
+  { value: "Finance & Accounting", label: "Finance & Accounting" },
+  { value: "Marketing & Sales", label: "Marketing & Sales" },
+  { value: "Operasional", label: "Operasional" },
+  { value: "Management", label: "Management" },
+  { value: "General", label: "General" },
+];
+
+const ROLE_OPTIONS = [
+  { value: "user", label: "User (Karyawan)" },
+  { value: "admin", label: "Admin Divisi" },
+  { value: "superadmin", label: "Super Admin (Akses Penuh Perusahaan)" },
+];
+
 const FormEditUser = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confPassword, setConfPassword] = useState("");
   const [nama, setNama] = useState("");
   const [jabatan, setJabatan] = useState("");
+  const [divisi, setDivisi] = useState("General");
   const [role, setRole] = useState("");
   const [msg, setMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -23,6 +44,7 @@ const FormEditUser = () => {
         setUsername(response.data.username);
         setNama(response.data.nama);
         setJabatan(response.data.jabatan);
+        setDivisi(response.data.divisi || "General");
         setRole(response.data.role);
       } catch (error) {
         if (error.response) {
@@ -33,8 +55,18 @@ const FormEditUser = () => {
     getUserById();
   }, [id]);
 
-  const updateUser = async (e) => {
+  const handleFormSubmit = (e) => {
     e.preventDefault();
+    setMsg("");
+    if (password && password !== confPassword) {
+      setMsg("Password dan Konfirmasi Password tidak cocok!");
+      return;
+    }
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmedSave = async () => {
+    setShowConfirmModal(false);
     setIsLoading(true);
     try {
       await axios.put(`${API_URL}/users/${id}`, {
@@ -43,6 +75,7 @@ const FormEditUser = () => {
         password: password,
         confPassword: confPassword,
         jabatan: jabatan,
+        divisi: divisi,
         role: role,
       });
       navigate("/users");
@@ -75,7 +108,7 @@ const FormEditUser = () => {
           </div>
         )}
 
-        <form onSubmit={updateUser}>
+        <form onSubmit={handleFormSubmit}>
           <div className="form-group-field">
             <label className="form-label-custom">Nama Lengkap</label>
             <input
@@ -88,16 +121,29 @@ const FormEditUser = () => {
             />
           </div>
 
-          <div className="form-group-field">
-            <label className="form-label-custom">Jabatan / Posisi</label>
-            <input
-              type="text"
-              className="form-input-custom"
-              value={jabatan}
-              onChange={(e) => setJabatan(e.target.value)}
-              placeholder="Contoh: IT Support, Supervisor"
-              required
-            />
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+            <div className="form-group-field">
+              <label className="form-label-custom">Jabatan / Posisi</label>
+              <input
+                type="text"
+                className="form-input-custom"
+                value={jabatan}
+                onChange={(e) => setJabatan(e.target.value)}
+                placeholder="Contoh: IT Support, Supervisor"
+                required
+              />
+            </div>
+
+            <div className="form-group-field">
+              <label className="form-label-custom">Divisi / Departemen</label>
+              <SearchableSelect
+                options={DIVISI_OPTIONS}
+                value={divisi}
+                onChange={(val) => setDivisi(val)}
+                placeholder="Pilih Divisi..."
+                searchPlaceholder="Cari divisi..."
+              />
+            </div>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
@@ -115,14 +161,13 @@ const FormEditUser = () => {
 
             <div className="form-group-field">
               <label className="form-label-custom">Role</label>
-              <select
-                className="form-select-custom"
+              <SearchableSelect
+                options={ROLE_OPTIONS}
                 value={role}
-                onChange={(e) => setRole(e.target.value)}
-              >
-                <option value="user">User (Karyawan Biasa)</option>
-                <option value="admin">Admin (Akses Penuh)</option>
-              </select>
+                onChange={(val) => setRole(val)}
+                placeholder="Pilih Role..."
+                searchPlaceholder="Cari role hak akses..."
+              />
             </div>
           </div>
 
@@ -161,6 +206,18 @@ const FormEditUser = () => {
           </div>
         </form>
       </div>
+
+      <ConfirmModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleConfirmedSave}
+        title="Konfirmasi Perubahan Karyawan"
+        message={`Apakah Anda yakin ingin menyimpan perubahan pada profil data karyawan "${nama}"?`}
+        confirmText="Ya, Simpan Perubahan"
+        cancelText="Batal"
+        type="primary"
+        isLoading={isLoading}
+      />
     </div>
   );
 };
