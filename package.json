@@ -1,0 +1,13 @@
+{
+  "name": "attendance-app-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Attendance App Monorepo (Frontend and Backend)",
+  "scripts": {
+    "start:frontend": "npm start --prefix frontend",
+    "start:backend": "npm start --prefix backend",
+    "install:frontend": "npm install --prefix frontend",
+    "install:backend": "npm install --prefix backend",
+    "install:all": "npm install --prefix frontend && npm install --prefix backend"
+  }
+}
