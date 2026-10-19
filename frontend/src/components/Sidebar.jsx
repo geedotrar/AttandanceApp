@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { IoPerson, IoPricetag, IoHome, IoLogOut } from "react-icons/io5";
+import { IoGridOutline, IoTimeOutline, IoPeopleOutline, IoLogOutOutline } from "react-icons/io5";
+import { AiFillBank } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { LogOut, reset } from "../features/authSlice";
 
@@ -14,46 +15,38 @@ const Sidebar = () => {
     dispatch(reset());
     navigate("/");
   };
+
   return (
-    <div>
-      <aside className="menu pl-2 has-shadow">
-        <p className="menu-label">General</p>
-        <ul className="menu-list">
-          <li>
-            <NavLink to={"/dashboard"}>
-              <IoHome /> Dashboard
+    <aside className="app-sidebar">
+      <div className="sidebar-top">
+        <div className="sidebar-brand-icon">
+          <AiFillBank />
+        </div>
+        <nav className="sidebar-nav">
+          <NavLink to="/dashboard" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
+            <IoGridOutline />
+            <span>Dashboard</span>
+          </NavLink>
+          <NavLink to="/absen" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
+            <IoTimeOutline />
+            <span>Absensi</span>
+          </NavLink>
+          {user && user.role === "admin" && (
+            <NavLink to="/users" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}>
+              <IoPeopleOutline />
+              <span>Karyawan</span>
             </NavLink>
-          </li>
-          <li>
-            <NavLink to={"/absen"}>
-              <IoPricetag /> Absensi
-            </NavLink>
-          </li>
-        </ul>
+          )}
+        </nav>
+      </div>
 
-        {user && user.role === "admin" && (
-          <div>
-            <p className="menu-label">Admin</p>
-            <ul className="menu-list">
-              <li>
-                <NavLink to={"/users"}>
-                  <IoPerson /> Users
-                </NavLink>
-              </li>
-            </ul>
-          </div>
-        )}
-
-        <p className="menu-label">Settings</p>
-        <ul className="menu-list">
-          <li>
-            <button onClick={logout} className="button is-white">
-              <IoLogOut /> Logout
-            </button>
-          </li>
-        </ul>
-      </aside>
-    </div>
+      <div className="sidebar-bottom">
+        <button onClick={logout} className="sidebar-logout" title="Sign Out">
+          <IoLogOutOutline />
+          <span>Keluar</span>
+        </button>
+      </div>
+    </aside>
   );
 };
 
