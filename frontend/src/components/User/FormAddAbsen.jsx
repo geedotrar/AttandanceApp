@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import Webcam from "react-webcam";
+import { API_URL } from "../../config";
 
 const FormAddAbsen = () => {
   const webcamRef = useRef(null);
@@ -57,7 +58,7 @@ const FormAddAbsen = () => {
       const formData = new FormData();
       formData.append("foto_checkin", blobImage, "checkin_image.jpg");
 
-      await axios.post("http://localhost:5000/absensi", formData);
+      await axios.post(`${API_URL}/absensi`, formData);
 
       navigate("/absen");
     } catch (error) {

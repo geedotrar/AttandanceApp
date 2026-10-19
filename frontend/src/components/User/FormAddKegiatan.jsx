@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { API_URL } from "../../config";
 
 const FormAddKegiatan = () => {
   const [kegiatan, setKegiatan] = useState("");
@@ -11,7 +12,7 @@ const FormAddKegiatan = () => {
   useEffect(() => {
     const getKegiatanById = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/kegiatan/${id}`);
+        const response = await axios.get(`${API_URL}/kegiatan/${id}`);
         setKegiatan(response.data.nama_kegiatan);
       } catch (error) {
         if (error) {
@@ -25,7 +26,7 @@ const FormAddKegiatan = () => {
   const addKegiatan = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/kegiatan/${id}`, {
+      await axios.put(`${API_URL}/kegiatan/${id}`, {
         nama_kegiatan: kegiatan,
       });
       navigate("/absen");

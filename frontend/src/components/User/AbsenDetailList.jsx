@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
+import { API_URL } from "../../config";
 
 const AbsenDetailList = () => {
   const [absenDetail, setAbsenDetail] = useState([]);
@@ -13,7 +14,7 @@ const AbsenDetailList = () => {
 
   const getAbsen = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/absensi/${id}`);
+      const response = await axios.get(`${API_URL}/absensi/${id}`);
       setAbsenDetail(response.data);
     } catch (error) {
       console.error("Error fetching absensis:", error);
@@ -39,12 +40,12 @@ const AbsenDetailList = () => {
             <tr>
               <td>
                 <figure className="image is-128x128">
-                  <img crossOrigin="anonymous" src={`http://localhost:5000/${absenDetail.foto_checkin}`} alt="checkinPhoto" />
+                  <img crossOrigin="anonymous" src={`${API_URL}/${absenDetail.foto_checkin}`} alt="checkinPhoto" />
                 </figure>
               </td>
               <td>
                 <figure className="image is-128x128">
-                  <img crossOrigin="anonymous" src={`http://localhost:5000/${absenDetail.foto_checkout}`} alt="checkoutPhoto" />
+                  <img crossOrigin="anonymous" src={`${API_URL}/${absenDetail.foto_checkout}`} alt="checkoutPhoto" />
                 </figure>
               </td>
               <td>{absenDetail && absenDetail.kegiatan && absenDetail.kegiatan.length > 0 ? absenDetail.kegiatan[0].nama_kegiatan : null}</td>

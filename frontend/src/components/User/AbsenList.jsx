@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import { IoPerson, IoPricetag, IoHome, IoLogOut } from "react-icons/io5";
 import { IoIosInformationCircleOutline } from "react-icons/io";
+import { API_URL } from "../../config";
 
 const AbsenList = () => {
   const [absensi, setAbsensi] = useState([]);
@@ -12,7 +13,7 @@ const AbsenList = () => {
 
   const getAbsen = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/absensi/`);
+      const response = await axios.get(`${API_URL}/absensi/`);
       setAbsensi(response.data);
     } catch (error) {
       console.error("Error fetching absensis:", error);

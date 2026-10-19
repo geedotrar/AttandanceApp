@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { API_URL } from "../../config";
 
 const FormEditUser = () => {
   const [username, setUsername] = useState("");
@@ -16,7 +17,7 @@ const FormEditUser = () => {
   useEffect(() => {
     const getUserById = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/users/${id}`);
+        const response = await axios.get(`${API_URL}/users/${id}`);
         setUsername(response.data.username);
         setNama(response.data.nama);
         setJabatan(response.data.jabatan);
@@ -33,7 +34,7 @@ const FormEditUser = () => {
   const updateUser = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/users/${id}`, {
+      await axios.put(`${API_URL}/users/${id}`, {
         nama: nama,
         username: username,
         password: password,

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
+import { API_URL } from "../../config";
 
 const UserAbsenList = () => {
   const [absensi, setAbsensi] = useState([]);
@@ -12,7 +13,7 @@ const UserAbsenList = () => {
 
   const getAbsen = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/absensi/user/${id}`);
+      const response = await axios.get(`${API_URL}/absensi/user/${id}`);
       setAbsensi(response.data);
     } catch (error) {
       console.error("Error fetching absensis:", error);
@@ -20,7 +21,7 @@ const UserAbsenList = () => {
   };
 
   const deleteAbsen = async (absenId) => {
-    await axios.delete(`http://localhost:5000/absensi/${absenId}`);
+    await axios.delete(`${API_URL}/absensi/${absenId}`);
     getAbsen();
   };
 
@@ -55,13 +56,13 @@ const UserAbsenList = () => {
                 {/* <td>{absen.foto_checkin ? absen.foto_checkin : null}</td> */}
                 <td>
                   <figure className="image is-128x128">
-                    <img crossOrigin="anonymous" src={`http://localhost:5000/${absen.foto_checkin}`} alt="checkinPhoto" />
+                    <img crossOrigin="anonymous" src={`${API_URL}/${absen.foto_checkin}`} alt="checkinPhoto" />
                   </figure>
                 </td>
                 {/* <td>{absen.foto_checkout ? absen.foto_checkout : null}</td> */}
                 <td>
                   <figure className="image is-128x128">
-                    <img crossOrigin="anonymous" src={`http://localhost:5000/${absen.foto_checkout}`} alt="checkOutPhoto" />
+                    <img crossOrigin="anonymous" src={`${API_URL}/${absen.foto_checkout}`} alt="checkOutPhoto" />
                   </figure>
                 </td>
                 <td>
